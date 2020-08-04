@@ -13,25 +13,27 @@ public class Main {
 			mode = args[0].toLowerCase();
 		}
 
-		ConfigParser config = null;
+		ConfigParser config;
 
-		switch (mode) {
-			case "production":
-				config = new ConfigParser(new File("src/main/java/config.txt"));
-				break;
-			case "staging":
-				config = new ConfigParser(new File("src/main/java/config.txt.dev"));
-				break;
-			case "development":
-				config = new ConfigParser(new File("src/main/java/config.txt.staging"));
-				break;
-			default:
-				System.err.println("Invalid argument");
+		if ("production".equals(mode)) {
+				config = new ConfigParser(new File("src/config.txt"));
+		} else  {
+			File configFile = new File("src/config-" + mode + ".txt");
+			if (!configFile.exists()) {
+				System.err.println("File does not exist");
+				return;
+			}
+			config = new ConfigParser(configFile);
+		}
+
+		System.out.printf("%-25s VALUE%n-----------------------------------%n", "KEY");
+		for (Map.Entry<String, String> entry : config.getConfigKeyValuePair().entrySet()) {
+			System.out.printf("%-25s %s%n", entry.getKey(), entry.getValue());
 		}
 	}
 }
 
-class ConfigParser{
+class ConfigParser {
 	Map<String, String> configKeyValuePair;
 
 	public ConfigParser(File configFilePath) {
@@ -40,13 +42,12 @@ class ConfigParser{
 	}
 
 	private void parseFile(File configFilePath) {
-		try (Scanner in = new Scanner(configFilePath);) {
+		try (Scanner in = new Scanner(configFilePath)) {
 			String prefix = "";
 			while (in.hasNext()) {
 				String lineText = in.nextLine();
 				if (lineText.isBlank()) {
 					prefix = "";
-					continue;
 				} else if (!lineText.contains("=")) {
 					prefix = lineText.substring(1, lineText.length() - 1) + ".";
 				} else {
@@ -67,5 +68,9 @@ class ConfigParser{
 
 	public String get(String key) {
 		return configKeyValuePair.get(key);
+	}
+
+	public Map<String, String> getConfigKeyValuePair() {
+		return (HashMap) ((HashMap) configKeyValuePair).clone();
 	}
 }
