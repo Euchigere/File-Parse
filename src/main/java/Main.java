@@ -10,28 +10,35 @@ public class Main {
 			mode = args[0].toLowerCase();
 		}
 
-		ConfigParser config;
 		File configFile;
 
-		// create a new configParser object depending on mode variable
+		// construct a path depending on mode variable
 		if ("production".equals(mode)) {
-			configFile = new File("src/config.txt");
-			config = new ConfigParser(configFile.getAbsoluteFile());
+			configFile = constructPath("src/config.txt");
 		} else  {
-			configFile = new File("src/config-" + mode + ".txt");
-			// verify if config file for the mode exists in relative path
+			configFile = constructPath("src/config-" + mode + ".txt");
+			// verify if config file for the mode exists in path
 			if (!configFile.exists()) {
-				System.err.println("File does not exist");
+				System.err.println("File is not in src folder or does not exist");
 				return;
 			}
-			System.out.println(configFile.getAbsoluteFile());
-			config = new ConfigParser(configFile.getAbsoluteFile());
 		}
+
+		ConfigParser config = new ConfigParser(configFile);  // create configParser object
 
 		// Print all the entries in the config file
 		System.out.printf("%-25s VALUE%n-----------------------------------%n", "KEY");
 		for (Map.Entry<String, String> entry : config.getConfigEntryMap().entrySet()) {
 			System.out.printf("%-25s %s%n", entry.getKey(), entry.getValue());
 		}
+	}
+
+	// construct path to file from absolute path(System agnostic)
+	public static File constructPath(String path) {
+		File relFilePath = new File(path);
+		String absFilePath = relFilePath.getAbsolutePath();
+		path = absFilePath.substring(0, absFilePath.indexOf("src"))
+				+ absFilePath.substring(absFilePath.lastIndexOf("src"));
+		return new File(path);
 	}
 }
