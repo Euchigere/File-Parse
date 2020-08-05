@@ -4,11 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-class ConfigParser {
+public class ConfigParser {
     Map<String, String> configEntryMap;
 
     public ConfigParser(File configFilePath) {
-        configEntryMap = new HashMap<>();
+        configEntryMap = new HashMap<String, String>();
+
         parseFile(configFilePath);
     }
 
@@ -37,6 +38,7 @@ class ConfigParser {
         }
     }
 
+    // return value of key in configEntryMap
     public String get(String key) {
         return configEntryMap.get(key);
     }
