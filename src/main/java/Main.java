@@ -11,18 +11,21 @@ public class Main {
 		}
 
 		ConfigParser config;
+		File configFile;
 
 		// create a new configParser object depending on mode variable
 		if ("production".equals(mode)) {
-				config = new ConfigParser(new File("src/config.txt"));
+			configFile = new File("src/config.txt");
+			config = new ConfigParser(configFile.getAbsoluteFile());
 		} else  {
-			File configFile = new File("src/config-" + mode + ".txt");
+			configFile = new File("src/config-" + mode + ".txt");
 			// verify if config file for the mode exists in relative path
 			if (!configFile.exists()) {
 				System.err.println("File does not exist");
 				return;
 			}
-			config = new ConfigParser(configFile);
+			System.out.println(configFile.getAbsoluteFile());
+			config = new ConfigParser(configFile.getAbsoluteFile());
 		}
 
 		// Print all the entries in the config file
